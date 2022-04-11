@@ -7,7 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
-driver.get('https://terraria.fandom.com/wiki/Weapons')                                          #Access the website
+driver.get('https://terraria.fandom.com/wiki/Weapons')
 driver.implicitly_wait(5)
 
 try:
