@@ -24,6 +24,7 @@ class SelectorOfWeapons:
 
     def genTypes(self):
         self.weaponsTypes = {}
+        self.typeList = []
         l = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, "toc")))
         self.waitLoad(l)
         # WebDriverWait(self.driver, 10).until(EC.visibility_of(l))
@@ -35,16 +36,36 @@ class SelectorOfWeapons:
                 last = t
             else:
                 self.weaponsTypes[last].append(t)
+                self.typeList.append(t)
     
     def genWeapons(self):
-        # AQUI VAI TER QUE USAR UM TRY JÁ QUE NEM TODAS AS LISTAS TEM UM PADRÃO CERTINHO
         self.weapons = {}
         lists = WebDriverWait(self.driver, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "infocard.clearfix.terraria.compact")))
-        for e in lists:
+        for ind, e in enumerate(lists):
+            self.weapons[self.typeList[ind]] = []
             self.waitLoad(e)
-            titles = WebDriverWait(self.driver, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "main-heading")))
-            for i in titles:
-                # self.waitLoad(i)
+            headers = []
+            try:
+                titles = WebDriverWait(e, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "main-heading")))
+                for k, v in enumerate(titles):
+                    self.waitLoad(v)
+                    headers = []
+                    headers.append(v.text)
+                    self.weapons[self.typeList[ind]] = {}
+                    self.weapons[self.typeList[ind]][v.text] = []
+            except:
+                pass
+            try:
+                lists = WebDriverWait(e, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "itemlist")))
+                for k, v in enumerate(lists):
+                    self.waitLoad(v)
+                    items = WebDriverWait(v, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "i")))
+                    for v1 in items:
+                        if type(self.weapons[self.typeList[ind]]) is list:
+                            self.weapons[self.typeList[ind]].append(v1.text)
+                        else:
+                            self.weapons[self.typeList[ind]][headers[k]].append(v1.text)
+            except:
                 pass
     
     def waitLoad(self, element, driver = True):
@@ -57,5 +78,6 @@ class SelectorOfWeapons:
 
 
 wp = SelectorOfWeapons()
-print(wp.weapons)
+# for v in wp.weapons:
+    # print(f'{v}\n> {wp.weapons[v]}')
 wp.finish()
