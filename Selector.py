@@ -14,6 +14,7 @@ class SelectorOfWeapons:
         self.driver.implicitly_wait(5)
         self.checkPopUp()
         self.genTypes()
+        self.genWeapons()
     
     def checkPopUp(self):
         try:
@@ -24,7 +25,8 @@ class SelectorOfWeapons:
     def genTypes(self):
         self.weaponsTypes = {}
         l = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, "toc")))
-        WebDriverWait(self.driver, 10).until(EC.visibility_of(l))
+        self.waitLoad(l)
+        # WebDriverWait(self.driver, 10).until(EC.visibility_of(l))
         last = ''
         for i in re.split('\n', l.text)[1:-1]:
             t = re.findall('[A-Za-z\s-]+', i)[0].strip()
@@ -33,14 +35,27 @@ class SelectorOfWeapons:
                 last = t
             else:
                 self.weaponsTypes[last].append(t)
-        for i in self.weaponsTypes.keys():
-            print(i)
-            for j in self.weaponsTypes[i]:
-                print(f'> {j}')
+    
+    def genWeapons(self):
+        # AQUI VAI TER QUE USAR UM TRY JÁ QUE NEM TODAS AS LISTAS TEM UM PADRÃO CERTINHO
+        self.weapons = {}
+        lists = WebDriverWait(self.driver, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "infocard.clearfix.terraria.compact")))
+        for e in lists:
+            self.waitLoad(e)
+            titles = WebDriverWait(self.driver, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "main-heading")))
+            for i in titles:
+                # self.waitLoad(i)
+                pass
+    
+    def waitLoad(self, element, driver = True):
+        if driver == True:
+            driver = self.driver
+        WebDriverWait(driver, 10).until(EC.visibility_of(element))
     
     def finish(self):
         self.driver.quit()
 
 
 wp = SelectorOfWeapons()
+print(wp.weapons)
 wp.finish()
