@@ -9,6 +9,7 @@ import re
 
 class SelectorOfWeapons:
     def __init__(self) -> None:
+        self.baseURL = 'https://terraria.fandom.com/wiki/'
         self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
         self.driver.get('https://terraria.fandom.com/wiki/Weapons')
         self.driver.implicitly_wait(5)
@@ -60,16 +61,27 @@ class SelectorOfWeapons:
                 for k, v in enumerate(wpList):
                     self.waitLoad(v)
                     items = WebDriverWait(v, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "i")))
-                    for v1 in items:
+                    for k1, v1 in enumerate(items):
+                        # print(v1.text)
                         if type(self.weapons[self.typeList[ind][1]]) is list:
-                            self.weapons[self.typeList[ind][1]].append(v1.text)
+                            self.weapons[self.typeList[ind][1]].append(self.getStats(v1))
                         else:
-                            self.weapons[self.typeList[ind][1]][headers[k]].append(v1.text)
+                            self.weapons[self.typeList[ind][1]][headers[k]].append(self.getStats(v1))
             except:
                 pass
     
     def getStats(self, element):
-        pass
+        try:
+            # print(element.text)
+            chwd = self.driver.window_handles
+            for k, w in enumerate(chwd):
+                if(w!=p):
+                    print(k, w)
+                    driver.switch_to.window(w)
+            self.driver.close()
+            return 'yes'
+        except:
+            return {'nome': element.text}
     
     def waitLoad(self, element, driver = True):
         if driver == True:
