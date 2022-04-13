@@ -73,13 +73,18 @@ class SelectorOfWeapons:
     def getStats(self, element):
         try:
             # print(element.text)
+            info = {'nome': element.text}
+            p = self.driver.current_window_handle
             chwd = self.driver.window_handles
-            for k, w in enumerate(chwd):
-                if(w!=p):
-                    print(k, w)
-                    driver.switch_to.window(w)
+            for w in chwd:
+                if w != p:
+                    self.driver.switch_to.window(w)
+            table = WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.CLASS_NAME, 'section.statistics')))
+            self.waitLoad(table)
+            
             self.driver.close()
-            return 'yes'
+            self.driver.switch_to.window(p)
+            return info
         except:
             return {'nome': element.text}
     
