@@ -41,6 +41,7 @@ class SelectorOfWeapons:
     
     def genWeapons(self):
         self.weapons = {}
+        self.weaponsList = [] 
         lists = WebDriverWait(self.driver, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "infocard.clearfix.terraria.compact")))
         for ind, e in enumerate(lists):
             self.weapons[self.typeList[ind][1]] = []
@@ -62,11 +63,13 @@ class SelectorOfWeapons:
                     self.waitLoad(v)
                     items = WebDriverWait(v, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "i")))
                     for k1, v1 in enumerate(items):
-                        # print(v1.text)
+                        # print(v1.text) 
+                        weapon = self.getStats(v1)
+                        self.weaponsList.append(weapon)
                         if type(self.weapons[self.typeList[ind][1]]) is list:
-                            self.weapons[self.typeList[ind][1]].append(self.getStats(v1))
+                            self.weapons[self.typeList[ind][1]].append(weapon)
                         else:
-                            self.weapons[self.typeList[ind][1]][headers[k]].append(self.getStats(v1))
+                            self.weapons[self.typeList[ind][1]][headers[k]].append(weapon)
             except:
                 pass
     
@@ -87,7 +90,18 @@ class SelectorOfWeapons:
             return info
         except:
             return {'nome': element.text}
+
+    def uploadWeapons(self):
+        for k, v in enumerate(self.weaponsList):
+            stats = '' 
+            for i in v:
+                stats += f"'{v[i]}', "
+            self.request(f"insert into weapons values ('{k}', {stats[:-2]});")
     
+    def request(self, sql):
+        # This calls a mysql function 
+        print(sql) 
+
     def waitLoad(self, element, driver = True):
         if driver == True:
             driver = self.driver
