@@ -1,3 +1,4 @@
+import re
 import time
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -15,7 +16,4 @@ search.send_keys(Keys.RETURN)
 time.sleep(5)
 
 driver.quit()'''
-
-a = {}
-a['nome'] = 'Rob'
-print(a['rob'])
+print(re.compile(r'\d+').search('10, 11, 12, 13').group())

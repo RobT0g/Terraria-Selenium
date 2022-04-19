@@ -87,19 +87,19 @@ class SelectorOfWeapons:
             self.driver.switch_to.window(self.driver.window_handles[1])
             table = WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.CLASS_NAME, 'section.statistics')))
             self.waitLoad(table)
-            #print(table.text)
             items = WebDriverWait(table, 5).until(EC.presence_of_all_elements_located((By.TAG_NAME, 'tr')))
             for i in items:
                 try:
                     field = WebDriverWait(i, 5).until(EC.presence_of_element_located((By.TAG_NAME, "th"))).text
                     if field in Weapon.getStats():
-                        info[field] = WebDriverWait(i, 5).until(EC.presence_of_element_located((By.TAG_NAME, 'td'))).text
-                    elif field == 'Rarity':
-                        try:
-                            rarity = WebDriverWait(WebDriverWait(i, 5).until(EC.presence_of_element_located(
-                                (By.TAG_NAME, 'td'))), 5).until(EC.presence_of_element_located((By.TAG_NAME, 'a'))).get_attribute('title')
-                            info[field] = re.compile(r'\d+').search(rarity).group()
-                        except Exception as e: print(e)
+                        if field == 'Rarity':
+                            try:
+                                rarity = WebDriverWait(WebDriverWait(i, 5).until(EC.presence_of_element_located(
+                                    (By.TAG_NAME, 'td'))), 5).until(EC.presence_of_element_located((By.TAG_NAME, 'a'))).get_attribute('title')
+                                info[field] = re.compile(r'\d+').search(rarity).group()
+                            except Exception as e: print(e)
+                        else:
+                            info[field] = re.compile(r'\d+').search(WebDriverWait(i, 5).until(EC.presence_of_element_located((By.TAG_NAME, 'td'))).text).group()
                 except Exception as e: print(e)
             print(info)
             self.driver.close()
@@ -134,5 +134,5 @@ class SelectorOfWeapons:
 
 wp = SelectorOfWeapons()
 for v in wp.weaponsList:
-    print(f'{v}\n> {wp.weaponsList[v].getInfo()}')
+    print(f'{v.getInfo()}\n' + ('-'*30) + '\n')
 wp.finish()
