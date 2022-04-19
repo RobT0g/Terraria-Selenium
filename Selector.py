@@ -65,10 +65,10 @@ class SelectorOfWeapons:
                     items = WebDriverWait(v, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "i")))
                     for k1, v1 in enumerate(items):
                         #print(v1.text) 
-                        if ind == 0 and k1 == 0:
+                        try:
                             weapon = self.getStats(v1)
-                        else:
-                            weapon = v1.text
+                        except:
+                            weapon = Weapon(v1.text)
                         self.weaponsList.append(weapon)
                         if type(self.weapons[self.typeList[ind][1]]) is list:
                             self.weapons[self.typeList[ind][1]].append(weapon)
@@ -93,6 +93,12 @@ class SelectorOfWeapons:
                     field = WebDriverWait(i, 5).until(EC.presence_of_element_located((By.TAG_NAME, "th"))).text
                     if field in Weapon.getStats():
                         info[field] = WebDriverWait(i, 5).until(EC.presence_of_element_located((By.TAG_NAME, 'td'))).text
+                    elif field == 'Rarity':
+                        try:
+                            rarity = WebDriverWait(WebDriverWait(i, 5).until(EC.presence_of_element_located(
+                                (By.TAG_NAME, 'td'))), 5).until(EC.presence_of_element_located((By.TAG_NAME, 'a'))).get_attribute('title')
+                            info[field] = re.compile(r'\d+').search(rarity).group()
+                        except Exception as e: print(e)
                 except Exception as e: print(e)
             print(info)
             self.driver.close()

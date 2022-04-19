@@ -4,7 +4,7 @@ class Weapon:
         self.stats = {}
     
     def getStats():
-        return ('Damage', 'Knockback', 'Use time', 'Rarity', 'Sell')
+        return ('Damage', 'Knockback', 'Use time', 'Sell')
     
     def insertInfo(self, info):
         try:
