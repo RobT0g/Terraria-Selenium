@@ -1,22 +1,27 @@
 class Weapon:
     def __init__(self, name) -> None:
         self.name = name
+        self.stats = {}
     
     def getStats():
         return ('Damage', 'Knockback', 'Use time', 'Rarity', 'Sell')
     
     def insertInfo(self, info):
-        for i in info:
-            self[i] = info[i]
+        try:
+            for i in info:
+                self.stats[i] = info[i]
+        except Exception as e:
+            print(e)
+            print(info)
 
     def getInfo(self):
-        return f'''Nome: {self.name}
-        > Damage: {self.damage};
-        > Knockback: {self.knockback};
-        > Use time: {self.useTime};
-        > Velocity: {self.velocity};
-        > Rarity: {self.rarity};
-        > Sell price: {self.sell}.'''
+        info = f'Nome: {self.name}'
+        for i in self.stats:
+            try:
+               info += f'\n>  {i}: {self.stats[i]}'
+            except:
+                pass
+        return info
 
 class WeaponType:
     def __init__(self, name, desc) -> None:

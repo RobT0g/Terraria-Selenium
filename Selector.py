@@ -88,15 +88,17 @@ class SelectorOfWeapons:
             self.waitLoad(table)
             #print(table.text)
             items = WebDriverWait(table, 5).until(EC.presence_of_all_elements_located((By.TAG_NAME, 'tr')))
-            print('ok')
             for i in items:
-                if (p := WebDriverWait(i, 5).until(EC.presence_of_element_located(By.TAG_NAME, 'th')).text) in Weapon.getStats():
-                    info[p] = WebDriverWait(i, 5).until(EC.presence_of_element_located(By.TAG_NAME, 'td')).text
+                try:
+                    field = WebDriverWait(i, 5).until(EC.presence_of_element_located((By.TAG_NAME, "th"))).text
+                    if field in Weapon.getStats():
+                        info[field] = WebDriverWait(i, 5).until(EC.presence_of_element_located((By.TAG_NAME, 'td'))).text
+                except Exception as e: print(e)
+            print(info)
             self.driver.close()
             self.driver.switch_to.window(p)
             weapon = Weapon(element.text)
             weapon.insertInfo(info)
-            print(weapon)
             return weapon
         except:
             self.driver.close()
