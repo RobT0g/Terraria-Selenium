@@ -82,7 +82,8 @@ class SelectorOfWeapons:
         try:
             print(element.text)
             info = {}
-            self.driver.execute_script(f"window.open('https://terraria.fandom.com/{element.text.replace(' ', '_')}');")
+            link = WebDriverWait(element, 5).until(EC.presence_of_element_located((By.TAG_NAME, 'a'))).get_attribute('href')
+            self.driver.execute_script(f'''window.open('{link}');''')
             self.driver.switch_to.window(self.driver.window_handles[1])
             table = WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.CLASS_NAME, 'section.statistics')))
             self.waitLoad(table)
@@ -132,6 +133,6 @@ class SelectorOfWeapons:
 
 
 wp = SelectorOfWeapons()
-for v in wp.weapons:
-    print(f'{v}\n> {wp.weapons[v]}')
+for v in wp.weaponsList:
+    print(f'{v}\n> {wp.weaponsList[v].getInfo()}')
 wp.finish()
