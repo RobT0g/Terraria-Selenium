@@ -16,12 +16,13 @@ def checkPopUp(driver):
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
 driver.get('https://terraria.fandom.com/wiki/Silver_Shortsword')
 driver.implicitly_wait(5)
+WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "NN0_TB_DIsNmMHgJWgT7U.XHcr6qf5Sub2F2zBJ53S_"))).click()
 # checkPopUp(driver)
-table = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CLASS_NAME, "section.statistics")))
+table = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CLASS_NAME, "stat")))
 WebDriverWait(driver, 10).until(EC.visibility_of(table))
-items = WebDriverWait(table, 5).until(EC.presence_of_all_elements_located((By.TAG_NAME, 'td')))
+items = WebDriverWait(table, 5).until(EC.presence_of_all_elements_located((By.TAG_NAME, 'tr')))
 for i in items:
-    print(i.text)
+    print(WebDriverWait(i, 5).until(EC.presence_of_element_located((By.TAG_NAME, "th"))).text, WebDriverWait(i, 5).until(EC.presence_of_element_located((By.TAG_NAME, "td"))).text)
 
 time.sleep(20)
 

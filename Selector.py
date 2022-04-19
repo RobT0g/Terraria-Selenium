@@ -6,6 +6,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import re
+from Register import Weapon
 
 class SelectorOfWeapons:
     def __init__(self) -> None:
@@ -63,8 +64,11 @@ class SelectorOfWeapons:
                     self.waitLoad(v)
                     items = WebDriverWait(v, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "i")))
                     for k1, v1 in enumerate(items):
-                        # print(v1.text) 
-                        weapon = self.getStats(v1)
+                        #print(v1.text) 
+                        if ind == 0 and k1 == 0:
+                            weapon = self.getStats(v1)
+                        else:
+                            weapon = v1.text
                         self.weaponsList.append(weapon)
                         if type(self.weapons[self.typeList[ind][1]]) is list:
                             self.weapons[self.typeList[ind][1]].append(weapon)
@@ -74,21 +78,29 @@ class SelectorOfWeapons:
                 pass
     
     def getStats(self, element):
+        p = self.driver.current_window_handle
         try:
-            # print(element.text)
-            info = {'nome': element.text}
-            p = self.driver.current_window_handle
-            chwd = self.driver.window_handles
-            for w in chwd:
-                if w != p:
-                    self.driver.switch_to.window(w)
+            print(element.text)
+            info = {}
+            self.driver.execute_script(f"window.open('https://terraria.fandom.com/{element.text.replace(' ', '_')}');")
+            self.driver.switch_to.window(self.driver.window_handles[1])
             table = WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.CLASS_NAME, 'section.statistics')))
             self.waitLoad(table)
-            
+            #print(table.text)
+            items = WebDriverWait(table, 5).until(EC.presence_of_all_elements_located((By.TAG_NAME, 'tr')))
+            print('ok')
+            for i in items:
+                if (p := WebDriverWait(i, 5).until(EC.presence_of_element_located(By.TAG_NAME, 'th')).text) in Weapon.getStats():
+                    info[p] = WebDriverWait(i, 5).until(EC.presence_of_element_located(By.TAG_NAME, 'td')).text
             self.driver.close()
             self.driver.switch_to.window(p)
-            return info
+            weapon = Weapon(element.text)
+            weapon.insertInfo(info)
+            print(weapon)
+            return weapon
         except:
+            self.driver.close()
+            self.driver.switch_to.window(p)
             return {'nome': element.text}
 
     def uploadWeapons(self):

@@ -2,13 +2,12 @@ class Weapon:
     def __init__(self, name) -> None:
         self.name = name
     
-    def insertInfo(self, dmg, knock, useTime, vel, rarity, sell):
-        self.damage = dmg
-        self.knockback = knock
-        self.useTime = useTime
-        self.velocity = vel
-        self.rarity = rarity
-        self.sell = sell
+    def getStats():
+        return ('Damage', 'Knockback', 'Use time', 'Rarity', 'Sell')
+    
+    def insertInfo(self, info):
+        for i in info:
+            self[i] = info[i]
 
     def getInfo(self):
         return f'''Nome: {self.name}

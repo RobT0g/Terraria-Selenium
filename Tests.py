@@ -18,4 +18,4 @@ driver.quit()'''
 
 a = {}
 a['nome'] = 'Rob'
-print(a)
+print(a['rob'])
