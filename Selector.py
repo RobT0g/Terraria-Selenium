@@ -29,7 +29,6 @@ class SelectorOfWeapons:
         self.typeList = []
         l = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, "toc")))
         self.waitLoad(l)
-        # WebDriverWait(self.driver, 10).until(EC.visibility_of(l))
         last = ''
         for i in re.split('\n', l.text)[1:-1]:
             t = re.findall('[A-Za-z\s-]+', i)[0].strip()
@@ -64,7 +63,6 @@ class SelectorOfWeapons:
                     self.waitLoad(v)
                     items = WebDriverWait(v, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "i")))
                     for k1, v1 in enumerate(items):
-                        #print(v1.text) 
                         try:
                             weapon = self.getStats(v1)
                         except:
@@ -112,17 +110,6 @@ class SelectorOfWeapons:
             self.driver.switch_to.window(p)
             return {'nome': element.text}
 
-    def uploadWeapons(self):
-        for k, v in enumerate(self.weaponsList):
-            stats = '' 
-            for i in v:
-                stats += f"'{v[i]}', "
-            self.request(f"insert into weapons values ('{k}', {stats[:-2]});")
-    
-    def request(self, sql):
-        # This calls a mysql function 
-        print(sql) 
-
     def waitLoad(self, element, driver = True):
         if driver == True:
             driver = self.driver
@@ -131,8 +118,3 @@ class SelectorOfWeapons:
     def finish(self):
         self.driver.quit()
 
-
-wp = SelectorOfWeapons()
-for v in wp.weaponsList:
-    print(f'{v.getInfo()}\n' + ('-'*30) + '\n')
-wp.finish()

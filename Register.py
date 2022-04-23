@@ -23,20 +23,3 @@ class Weapon:
                 pass
         return info
 
-class WeaponType:
-    def __init__(self, name, desc) -> None:
-        self.name = name
-        self.desc = desc
-        self.weapons = {}
-    
-    def addWeapon(self, weapon):
-        self.weapons[weapon.name] = weapon
-    
-
-class WeaponClass:
-    def __init__(self, name, desc) -> None:
-        self.name = name
-        self.types = {}
-    
-    def addType(self, type):
-        self.types[type.name] = type
