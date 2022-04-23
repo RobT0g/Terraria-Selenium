@@ -14,13 +14,16 @@ class Database:
             database = 'terraria'
         )
         self.cursor = self.con.cursor()
+        #self.cursor.execute('truncate sections;')
+        #self.cursor.execute('truncate weapons;')
+        #self.con.commit()
 
-    def uploadSections(self, sectionsList):
-        for k, v in enumerate(sectionsList):
-            sql = 'insert into sections values '
-            for v1 in sectionsList[v]:
-                sql += f'''(default, '{v}', '{v1[0]}'), '''
-            self.request(sql[:-2] + ';')
+    def uploadSections(self, sections):
+        sql = 'insert into sections values '
+        for k, v in enumerate(sections):
+            for v1 in sections[v]:
+                sql += f'''('{v1[1]}', '{v}', '{v1[0]}'), '''
+        self.request(sql[:-2] + ';')
 
     def uploadWeapons(self, weaponsList):
         for k, v in enumerate(weaponsList):
@@ -38,7 +41,7 @@ class Database:
             self.cursor.execute(sql)
             self.con.commit()
         except Exception as e:
-            print(e)
+            print('ERRO\n', e)
     
 db = Database()
 w = Weapon('Sword B')

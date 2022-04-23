@@ -7,6 +7,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import re
 from Register import Weapon
+from Database import Database
+
+db = Database()
 
 class SelectorOfWeapons:
     def __init__(self) -> None:
@@ -16,7 +19,7 @@ class SelectorOfWeapons:
         self.driver.implicitly_wait(5)
         self.checkPopUp()
         self.genTypes()
-        self.genWeapons()
+        #self.genWeapons()
     
     def checkPopUp(self):
         try:
@@ -38,6 +41,7 @@ class SelectorOfWeapons:
             else:
                 self.weaponsTypes[last].append([t, num])
                 self.typeList.append([t, num])
+        db.uploadSections(self.weaponsTypes)
     
     def genWeapons(self):
         self.weapons = {}
