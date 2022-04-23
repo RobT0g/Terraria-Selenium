@@ -1,3 +1,4 @@
+import enum
 import mysql.connector
 from Register import Weapon
 
@@ -7,6 +8,7 @@ from Register import Weapon
 
 class Database:
     def __init__(self) -> None:
+        self.count = 0
         self.con = mysql.connector.connect(
             host = 'localhost',
             user = 'root',
@@ -14,9 +16,9 @@ class Database:
             database = 'terraria'
         )
         self.cursor = self.con.cursor()
-        #self.cursor.execute('truncate sections;')
-        #self.cursor.execute('truncate weapons;')
-        #self.con.commit()
+        self.cursor.execute('''delete from weapons where id > '-1';''')
+        self.cursor.execute('''delete from sections where id != '0';''')
+        self.con.commit()
 
     def uploadSections(self, sections):
         sql = 'insert into sections values '
@@ -25,15 +27,31 @@ class Database:
                 sql += f'''('{v1[1]}', '{v}', '{v1[0]}'), '''
         self.request(sql[:-2] + ';')
 
-    def uploadWeapons(self, weaponsList):
-        for k, v in enumerate(weaponsList):
-            print(v.stats)
-            fields = 'name, '
-            stat = f"'{v.name}', "
-            for ind, i in enumerate(v.stats):
-                stat += f"'{v.stats[i]}', "
-                fields += f"{i}, "
-            self.request(f"insert into weapons ({fields[:-2]}) values ({stat[:-2]});")
+    def uploadWeapons(self, weapons):
+        print(weapons)
+        print('\n\n\n')
+        for k, v in enumerate(weapons):
+            sql = 'insert into weapons values '
+            if type(weapons[v]) is dict:
+                for k1, v1 in enumerate(weapons[v]):
+                    for k2, v2 in enumerate(weapons[v][v1]):
+                        sql += f'''('{self.count}', '{v}', {self.getWeaponSql(v2)}'{k1}'), '''
+                        self.count += 1
+            else:
+                for k1, v1 in enumerate(weapons[v]):
+                    sql += f'''('{self.count}', '{v}', {self.getWeaponSql(v1)}'1'), '''
+                    self.count += 1
+            self.request(sql[:-2] + ';')
+    
+    def getWeaponSql(self, weapon):
+        sql = ""
+        for i in weapon:
+            if weapon[i]:
+                info = weapon[i].replace("'", '"')
+                sql += f"'{info}', "
+            else:
+                sql += 'default, '
+        return sql
     
     def request(self, sql):
         print(sql) 
@@ -43,7 +61,3 @@ class Database:
         except Exception as e:
             print('ERRO\n', e)
     
-db = Database()
-w = Weapon('Sword B')
-w.insertInfo({'damage': '10'})
-db.uploadWeapons([w])

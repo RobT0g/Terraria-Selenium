@@ -13,6 +13,8 @@ from selenium.webdriver.common.keys import Keys						# This enables you yo use a
 search = driver.find_element(By.CLASS_NAME, "mw-parser-output") 	#.find_element.* don't work anymore
 search.send_keys()													# Use this to enter text or keys
 
+driver.implicitly_wait(10)				# Makes the code wait up to that amount of seconds for the page to load. Applies to any other driver searches on the future
+
 # Await for a given element to load
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import excepted_conditions as EC
@@ -22,3 +24,9 @@ try:
 	)
 finally:
 	driver.quit()
+
+# Expected conditions examples
+> EC.presence_of_element_located((By.ID, "elementId"))				# Waits to find the element
+> EC.presence_of_all_elements_located((By.CLASS_NAME, "i"))			# Waits to find all the elements
+> EC.text_to_be_present_in_element((By.CLASS_NAME, "i"), 'Text')	# Waits for the moment where the specified text shows on the element
+

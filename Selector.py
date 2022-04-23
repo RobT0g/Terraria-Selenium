@@ -19,7 +19,7 @@ class SelectorOfWeapons:
         self.driver.implicitly_wait(5)
         self.checkPopUp()
         self.genTypes()
-        #self.genWeapons()
+        self.genWeapons()
     
     def checkPopUp(self):
         try:
@@ -45,7 +45,6 @@ class SelectorOfWeapons:
     
     def genWeapons(self):
         self.weapons = {}
-        self.weaponsList = [] 
         lists = WebDriverWait(self.driver, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "infocard.clearfix.terraria.compact")))
         for ind, e in enumerate(lists):
             self.weapons[self.typeList[ind][1]] = []
@@ -70,20 +69,24 @@ class SelectorOfWeapons:
                         try:
                             weapon = self.getStats(v1)
                         except:
-                            weapon = Weapon(v1.text)
-                        self.weaponsList.append(weapon)
+                            weapon = {'nome': v1.text}
+                            for i in Weapon.getStats():
+                                weapon[i] = None
                         if type(self.weapons[self.typeList[ind][1]]) is list:
                             self.weapons[self.typeList[ind][1]].append(weapon)
                         else:
                             self.weapons[self.typeList[ind][1]][headers[k]].append(weapon)
             except:
                 pass
+        db.uploadWeapons(self.weapons)
     
     def getStats(self, element):
         p = self.driver.current_window_handle
         try:
             print(element.text)
-            info = {}
+            info = {'nome': element.text}
+            for i in Weapon.getStats():
+                info[i] = None
             link = WebDriverWait(element, 5).until(EC.presence_of_element_located((By.TAG_NAME, 'a'))).get_attribute('href')
             self.driver.execute_script(f'''window.open('{link}');''')
             self.driver.switch_to.window(self.driver.window_handles[1])
@@ -106,13 +109,14 @@ class SelectorOfWeapons:
             print(info)
             self.driver.close()
             self.driver.switch_to.window(p)
-            weapon = Weapon(element.text)
-            weapon.insertInfo(info)
-            return weapon
+            return info
         except:
             self.driver.close()
             self.driver.switch_to.window(p)
-            return {'nome': element.text}
+            info = {'nome': element.text}
+            for i in Weapon.getStats():
+                info[i] = None
+            return info
 
     def waitLoad(self, element, driver = True):
         if driver == True:
