@@ -1,3 +1,4 @@
+import enum
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
@@ -7,9 +8,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import re
 from Register import Weapon
-from Database import Database
+from openpyxl import Workbook, load_workbook
+#from Database import Database
 
-db = Database()
+#db = Database()
 
 class SelectorOfWeapons:
     def __init__(self) -> None:
@@ -41,7 +43,7 @@ class SelectorOfWeapons:
             else:
                 self.weaponsTypes[last].append([t, num])
                 self.typeList.append([t, num])
-        db.uploadSections(self.weaponsTypes)
+        #db.uploadSections(self.weaponsTypes)
     
     def genWeapons(self):
         self.weapons = {}
@@ -78,7 +80,7 @@ class SelectorOfWeapons:
                             self.weapons[self.typeList[ind][1]][headers[k]].append(weapon)
             except:
                 pass
-        db.uploadWeapons(self.weapons)
+        #db.uploadWeapons(self.weapons)
     
     def getStats(self, element):
         p = self.driver.current_window_handle
@@ -126,3 +128,56 @@ class SelectorOfWeapons:
     def finish(self):
         self.driver.quit()
 
+class SelectorOfTools:
+    def __init__(self) -> None:
+        self.baseURL = 'https://terraria.fandom.com/wiki/'
+        self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+        self.driver.get('https://terraria.fandom.com/wiki/Tools')
+        self.driver.implicitly_wait(5)
+        self.alphabet = 'abcdefghijklmnopqrstuvwxyz'
+        self.checkPopUp()
+        self.selectTypes()
+        self.selectTools()
+    
+    def checkPopUp(self):
+        try:
+            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "NN0_TB_DIsNmMHgJWgT7U.XHcr6qf5Sub2F2zBJ53S_"))).click()
+        except:
+            pass
+
+    def selectTypes(self):
+        self.toolTypes = []
+        l = WebDriverWait(self.driver, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "mw-headline")))
+        for i in l:
+            self.waitLoad(i)
+            if i.text not in ['Miscellaneous', 'Multi-use tools']:
+                self.toolTypes.append(i.text)
+    
+    def selectTools(self):
+        self.tools = [[] for i in self.toolTypes]
+        l = WebDriverWait(self.driver, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "itemlist.terraria")))
+        for k, i in enumerate(l):
+            self.waitLoad(i)
+            tools = WebDriverWait(i, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, "i")))
+            for j in tools:
+                self.tools[k].append(j.text)
+    
+    def waitLoad(self, element, driver = True):
+        if driver == True:
+            driver = self.driver
+        WebDriverWait(driver, 5).until(EC.visibility_of(element)) 
+
+    def getExcCoord(self, coord):
+        if coord[0] > 26:
+            return f'{self.alphabet[int(coord[0]/26)]}{self.alphabet[coord[0]%26]}{coord[1]}'
+        return f'{self.alphabet[coord[0]%26]}{coord[1]}'
+
+    def saveOnExcel(self):
+        table = Workbook()
+        act = table.active
+        act.append(self.toolTypes)
+        for k1, v1 in enumerate(self.tools):
+            for k2, v2 in enumerate(v1):
+                print(p:=self.getExcCoord((k1, 2+k2)))
+                act[p] = v2
+        table.save('Base.xlsx')

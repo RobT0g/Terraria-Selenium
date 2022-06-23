@@ -1,5 +1,6 @@
-import enum
-from Selector import SelectorOfWeapons
+from Selector import SelectorOfWeapons, SelectorOfTools
 
-wp = SelectorOfWeapons()
-wp.finish()
+#wp = SelectorOfWeapons()
+#wp.finish()
+t = SelectorOfTools()
+t.saveOnExcel()
