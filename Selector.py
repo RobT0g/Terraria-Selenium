@@ -9,9 +9,9 @@ from selenium.webdriver.support import expected_conditions as EC
 import re
 from Register import Weapon
 from openpyxl import Workbook, load_workbook
-#from Database import Database
+from Database import Database
 
-#db = Database()
+db = Database()
 
 class SelectorOfWeapons:
     def __init__(self) -> None:
@@ -181,3 +181,6 @@ class SelectorOfTools:
                 print(p:=self.getExcCoord((k1, 2+k2)))
                 act[p] = v2
         table.save('Base.xlsx')
+
+    def finish(self):
+        self.driver.quit()

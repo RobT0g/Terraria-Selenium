@@ -1,5 +1,4 @@
-import enum
-import mysql.connector
+from mysql import connector
 from Register import Weapon
 
 # cursor.execute(sql) 
@@ -9,7 +8,7 @@ from Register import Weapon
 class Database:
     def __init__(self) -> None:
         self.count = 0
-        self.con = mysql.connector.connect(
+        self.con = connector.connect(
             host = 'localhost',
             user = 'root',
             password = '',
